@@ -10,14 +10,25 @@ var express    = require("express"),
     Comment    = require("./models/comment"),
     User       = require("./models/user"),
     seedDB     = require("./seeds");
-const port     = 3000;
+//const port     = 3000;
+var port = process.env.PORT || 3000;
 
 var commentRoutes =  require("./routes/comments"),
     campgroundRoutes =  require("./routes/campgrounds"),
     indexRoutes   =  require("./routes/index");
 
 //seedDB(); //seed the database
-mongoose.connect("mongodb://localhost:27017/yelp_camp_v9", {useNewUrlParser: true, useUnifiedTopology: true });
+//mongodb://localhost:27017/yelp_camp_v9
+mongoose.connect("mongodb+srv://rana:dbrana@cluster0.hjfly.mongodb.net/yelp_camp?retryWrites=true&w=majority",{
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    useCreateIndex: true
+}).then(() => {
+    console.log('Connected to DB!');
+}).catch(err => {
+    console.log('Error', err.message);
+});
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
@@ -44,9 +55,10 @@ app.use(function(req, res, next){
     next();
 })
 
-//REQURING ROUTES
+//REQUiRING ROUTES
 app.use(indexRoutes);
 app.use("/campground", campgroundRoutes);
 app.use("/campground/:id/comments", commentRoutes);
 
-app.listen(port, () => console.log('Example app listening at http://localhost:${port}'));
+//app.listen(port, () => console.log('Example app listening at http://localhost:${port}'));
+app.listen(port);
